@@ -7,7 +7,9 @@ var gulp        = require('gulp'),
     browserify  = require('browserify'),
     del         = require('del'),
     argv        = require('yargs').argv,
-    coffee      = require('gulp-coffee');
+    coffee      = require('gulp-coffee'),
+    uglify      = require('gulp-uglify'),
+    concat      = require('gulp-concat');
 
 gulp.task('browser-sync', function() {
   browserSync({
@@ -29,34 +31,25 @@ gulp.task('compass', function() {
     .pipe(gulp.dest('dist/stylesheets'));
 });
 
-
-gulp.task('js', ['coffee'], function() {
-  return gulp.src('src/scripts/*.js')
-    .pipe($.plumber())
-    .pipe(through2.obj(function (file, enc, next) {
-      browserify(file.path, { debug: true })
-        .transform(require('babelify'))
-        .transform(require('debowerify'))
-        .bundle(function (err, res) {
-          if (err) { return next(err); }
-          file.contents = res;
-            next(null, file);
-        });
-      }))
-      .on('error', function (error) {
-        console.log(error.stack);
-        this.emit('end')
-    })
-  .pipe( $.rename('app.js'))
-  .pipe( gulp.dest('dist/scripts/'));
+gulp.task('js', ['coffee'], function(){
+  return gulp.src([
+        'src/scripts/namespaces.js',
+        'dist/js/latlng.js.js',
+        'dist/js/coordinate.js.js',
+        'dist/js/arc.js.js',
+        'dist/js/geoutil.js.js',
+        'dist/js/spherical_polygon.js.js'
+      ])
+    // .pipe(uglify())
+    .pipe(concat('divide-polygon.js'))
+    .pipe(gulp.dest('./dist/'));
 });
 
 gulp.task('coffee', function() {
-  gulp.src('./src/scripts/*.js.coffee')
+  return gulp.src('src/scripts/*.js.coffee')
       .pipe(coffee())
-      .pipe(gulp.dest('./src/scripts/'));
+      .pipe(gulp.dest('./dist/js/'));
 });
-
 
 gulp.task('clean', function(cb) {
   del('./dist', cb);

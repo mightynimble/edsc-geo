@@ -1,6 +1,6 @@
 ns = edsc.map
 
-ns.L.sphericalPolygon = do (LatLng = ns.LatLng, geoutil=ns.geoutil, Arc=ns.Arc, Coordinate=ns.Coordinate, config=@edsc.config) ->
+ns.sphericalPolygon = do (LatLng = ns.LatLng, geoutil=ns.geoutil, Arc=ns.Arc, Coordinate=ns.Coordinate, config=@edsc.config) ->
 
   # Converts the given latlngs to L.latLng objects and ensures they're
   # normalized on the expected interval, [-180, 180]
@@ -201,79 +201,79 @@ ns.L.sphericalPolygon = do (LatLng = ns.LatLng, geoutil=ns.geoutil, Arc=ns.Arc, 
 
     {interiors: interiors, boundaries: boundaries}
 
-  # This is a bit tricky.  We need to be an instanceof L.Polygon for L.Draw methods
-  # to work, but in reality we're an L.FeatureGroup, hence the "includes"
-  L.SphericalPolygon = L.Polygon.extend
-    includes: [L.LayerGroup.prototype, L.FeatureGroup.prototype]
-    options:
-      fill: true
+  # # This is a bit tricky.  We need to be an instanceof L.Polygon for L.Draw methods
+  # # to work, but in reality we're an L.FeatureGroup, hence the "includes"
+  # L.SphericalPolygon = L.Polygon.extend
+  #   includes: [L.LayerGroup.prototype, L.FeatureGroup.prototype]
+  #   options:
+  #     fill: true
 
-    initialize: (latlngs, options) ->
-      @_layers = {}
-      @_options = L.extend({}, @options, options)
-      @setLatLngs(latlngs)
+  #   initialize: (latlngs, options) ->
+  #     @_layers = {}
+  #     @_options = L.extend({}, @options, options)
+  #     @setLatLngs(latlngs)
 
-    setLatLngs: (latlngs) ->
-      if latlngs[0] && Array.isArray(latlngs[0]) && latlngs[0].length > 2
-        # Don't deal with holes
-        console.warn "Polygon with hole detected.  Ignoring." if config.warn
-        latlngs = latlngs[0]
-      latlngs = (L.latLng(latlng) for latlng in latlngs)
+  #   setLatLngs: (latlngs) ->
+  #     if latlngs[0] && Array.isArray(latlngs[0]) && latlngs[0].length > 2
+  #       # Don't deal with holes
+  #       console.warn "Polygon with hole detected.  Ignoring." if config.warn
+  #       latlngs = latlngs[0]
+  #     latlngs = (L.latLng(latlng) for latlng in latlngs)
 
-      @_latlngs = latlngs
+  #     @_latlngs = latlngs
 
-      divided = dividePolygon(latlngs)
+  #     divided = dividePolygon(latlngs)
 
-      if @_boundaries
-        @_interiors.setLatLngs(divided.interiors)
-        @_boundaries.setLatLngs(divided.boundaries)
-      else
-        @_interiors = L.polygon(divided.interiors, L.extend({}, @_options, stroke: false))
-        @_boundaries = L.multiPolyline(divided.boundaries, L.extend({}, @_options, fill: false))
-        @addLayer(@_interiors)
-        @addLayer(@_boundaries)
+  #     if @_boundaries
+  #       @_interiors.setLatLngs(divided.interiors)
+  #       @_boundaries.setLatLngs(divided.boundaries)
+  #     else
+  #       @_interiors = L.polygon(divided.interiors, L.extend({}, @_options, stroke: false))
+  #       @_boundaries = L.multiPolyline(divided.boundaries, L.extend({}, @_options, fill: false))
+  #       @addLayer(@_interiors)
+  #       @addLayer(@_boundaries)
 
-    getLatLngs: ->
-      makeCounterclockwise(@_latlngs.concat())
+  #   getLatLngs: ->
+  #     makeCounterclockwise(@_latlngs.concat())
 
-    newLatLngIntersects: (latlng, skipFirst) ->
-      false
+  #   newLatLngIntersects: (latlng, skipFirst) ->
+  #     false
 
-    setOptions: (options) ->
-      @_options = @options = L.extend({}, @_options, options)
-      L.setOptions(@_interiors, L.extend({}, @_options, stroke: false))
-      L.setOptions(@_boundaries, L.extend({}, @_options, fill: false))
-      @redraw()
+  #   setOptions: (options) ->
+  #     @_options = @options = L.extend({}, @_options, options)
+  #     L.setOptions(@_interiors, L.extend({}, @_options, stroke: false))
+  #     L.setOptions(@_boundaries, L.extend({}, @_options, fill: false))
+  #     @redraw()
 
-    setStyle: (style) ->
-      if @options.previousOptions
-        @options.previousOptions = @_options
-      @_interiors.setStyle(L.extend({}, style, stroke: false))
-      @_boundaries.setStyle(L.extend({}, style, fill: false))
+  #   setStyle: (style) ->
+  #     if @options.previousOptions
+  #       @options.previousOptions = @_options
+  #     @_interiors.setStyle(L.extend({}, style, stroke: false))
+  #     @_boundaries.setStyle(L.extend({}, style, fill: false))
 
-    redraw: ->
-      @setLatLngs(@_latlngs)
+  #   redraw: ->
+  #     @setLatLngs(@_latlngs)
 
-  L.sphericalPolygon = (latlngs, options) -> new L.SphericalPolygon(latlngs, options)
+  # L.sphericalPolygon = (latlngs, options) -> new L.SphericalPolygon(latlngs, options)
 
-  # Monkey-patch _removeLayer.  The original doesn't handle event propagation
-  # from FeatureGroups, and SphericalPolygons are FeatureGroups
-  originalRemove = L.EditToolbar.Delete.prototype._removeLayer
-  L.EditToolbar.Delete.prototype._removeLayer = (e) ->
-    e.layer = e.target if e.target?._boundaries
-    originalRemove.call(this, e)
+  # # Monkey-patch _removeLayer.  The original doesn't handle event propagation
+  # # from FeatureGroups, and SphericalPolygons are FeatureGroups
+  # originalRemove = L.EditToolbar.Delete.prototype._removeLayer
+  # L.EditToolbar.Delete.prototype._removeLayer = (e) ->
+  #   e.layer = e.target if e.target?._boundaries
+  #   originalRemove.call(this, e)
 
-  L.Draw.Polygon = L.Draw.Polygon.extend
-    Poly: L.SphericalPolygon
+  # L.Draw.Polygon = L.Draw.Polygon.extend
+  #   Poly: L.SphericalPolygon
 
-    addHooks: ->
-      L.Draw.Polyline.prototype.addHooks.call(this)
-      if @_map
-        this._poly = new L.SphericalPolygon([], @options.shapeOptions)
+  #   addHooks: ->
+  #     L.Draw.Polyline.prototype.addHooks.call(this)
+  #     if @_map
+  #       this._poly = new L.SphericalPolygon([], @options.shapeOptions)
 
-  L.Edit.Poly = L.Edit.Poly.extend
-    _getMiddleLatLng: (marker1, marker2) ->
-      latlng = geoutil.gcInterpolate(marker1.getLatLng(), marker2.getLatLng())
+  # L.Edit.Poly = L.Edit.Poly.extend
+  #   _getMiddleLatLng: (marker1, marker2) ->
+  #     latlng = geoutil.gcInterpolate(marker1.getLatLng(), marker2.getLatLng())
 
   exports =
     dividePolygon: dividePolygon
