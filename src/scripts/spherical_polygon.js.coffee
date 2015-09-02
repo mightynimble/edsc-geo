@@ -7,7 +7,7 @@ ns.sphericalPolygon = do (LatLng = ns.LatLng, geoutil=ns.geoutil, Arc=ns.Arc, Co
   convertLatLngs = (latlngs) ->
     result = []
     for original in latlngs
-      latlng = L.latLng(original)
+      latlng = new LatLng(original)
       latlng.lng -= 360 while latlng.lng > 180
       latlng.lng += 360 while latlng.lng < -180
       result.push(latlng)

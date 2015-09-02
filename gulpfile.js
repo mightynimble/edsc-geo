@@ -1,25 +1,9 @@
 var gulp        = require('gulp'),
     $           = require('gulp-load-plugins')(),
-    path        = require('path'),
-    browserSync = require('browser-sync'),
-    through2    = require('through2'),
-    reload      = browserSync.reload,
-    browserify  = require('browserify'),
     del         = require('del'),
-    argv        = require('yargs').argv,
     coffee      = require('gulp-coffee'),
     uglify      = require('gulp-uglify'),
     concat      = require('gulp-concat');
-
-gulp.task('browser-sync', function() {
-  browserSync({
-    open: !!argv.open,
-    notify: !!argv.notify,
-    server: {
-      baseDir: "./dist"
-    }
-  });
-});
 
 gulp.task('compass', function() {
   return gulp.src('./src/stylesheets/**/*.{scss,sass}')
@@ -40,7 +24,7 @@ gulp.task('js', ['coffee'], function(){
         'dist/js/geoutil.js.js',
         'dist/js/spherical_polygon.js.js'
       ])
-    // .pipe(uglify())
+    .pipe(uglify())
     .pipe(concat('divide-polygon.js'))
     .pipe(gulp.dest('./dist/'));
 });
@@ -69,15 +53,6 @@ gulp.task('templates', function() {
     .pipe( gulp.dest('dist/') )
 });
 
-
-
 gulp.task('build', ['compass', 'js', 'templates', 'images']);
 
-gulp.task('serve', ['build', 'browser-sync'], function () {
-  gulp.watch('src/stylesheets/**/*.{scss,sass}',['compass', reload]);
-  gulp.watch('src/scripts/**/*.js',['js', reload]);
-  gulp.watch('src/images/**/*',['images', reload]);
-  gulp.watch('src/*.html',['templates', reload]);
-});
-
-gulp.task('default', ['serve']);
+gulp.task('default', ['build']);

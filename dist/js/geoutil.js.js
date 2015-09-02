@@ -3,7 +3,7 @@
 
   ns = window.edsc.map;
 
-  ns.geoutil = (function(LatLng, Coordinate, Arc, config) {
+  ns.geoutil = (function(LatLng, Coordinate, Arc) {
     var DEG_TO_RAD, EPSILON, NORTH_POLE, RAD_TO_DEG, SOUTH_POLE, _angleDelta, _course, _rotationDirection, area, containsPole, exports, gcInterpolate;
     EPSILON = 0.00000001;
     NORTH_POLE = 1;
@@ -157,9 +157,7 @@
         } else if (dir < 0) {
           return SOUTH_POLE;
         } else {
-          if (config.debug) {
-            console.warn("Rotation direction is NONE despite containing a pole");
-          }
+          console.warn("Rotation direction is NONE despite containing a pole - " + dir);
           return 0;
         }
       } else {
@@ -227,6 +225,6 @@
       NORTH_POLE: NORTH_POLE,
       SOUTH_POLE: SOUTH_POLE
     };
-  })(ns.LatLng, ns.Coordinate, ns.Arc, this.edsc.config);
+  })(ns.LatLng, ns.Coordinate, ns.Arc);
 
 }).call(this);

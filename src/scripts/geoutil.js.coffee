@@ -1,6 +1,6 @@
 ns = window.edsc.map
 
-ns.geoutil = do (LatLng = ns.LatLng, Coordinate = ns.Coordinate, Arc = ns.Arc, config = @edsc.config) ->
+ns.geoutil = do (LatLng = ns.LatLng, Coordinate = ns.Coordinate, Arc = ns.Arc) ->
 
   # A small number for dealing with near-0
   EPSILON = 0.00000001
@@ -151,8 +151,7 @@ ns.geoutil = do (LatLng = ns.LatLng, Coordinate = ns.Coordinate, Arc = ns.Arc, c
       else if dir < 0
         SOUTH_POLE
       else
-        if config.debug
-          console.warn("Rotation direction is NONE despite containing a pole")
+        console.warn("Rotation direction is NONE despite containing a pole - " + dir)
         0
     else
       0

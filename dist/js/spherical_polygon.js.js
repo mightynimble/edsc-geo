@@ -10,7 +10,7 @@
       result = [];
       for (j = 0, len1 = latlngs.length; j < len1; j++) {
         original = latlngs[j];
-        latlng = L.latLng(original);
+        latlng = new LatLng(original);
         while (latlng.lng > 180) {
           latlng.lng -= 360;
         }
