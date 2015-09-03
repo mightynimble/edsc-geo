@@ -1,4 +1,4 @@
-# [EDSC GEO Plugin]
+# EDSC GEO Plugin
 
 ## About
 
@@ -36,14 +36,25 @@ Run gulp from command line
 
     > gulp
 or
+
     > gulp build
 
 To clean up dist:
+
 	> gulp clean
 
 To compile coffeescripts only:
+
 	> gulp js
 
 ## Example
+There is an example html file (index.html) in dist folder.
 
-There is an example html file in dist folder.
+## Usage
+* Include divide-polygon.js in your html header
+    > <script src="divide-polygon.js" type="text/javascript"></script>
+* A polygon, an array of lat-lng objects, which crosses antemeridian, can be divided into multiple polygons, as is shown in the red polygon on the example page.
+    > var crossAntiMPoly = [new LatLng(22, -130), new LatLng(22, 100), new LatLng(10, 100), new LatLng(10, -130), new LatLng(22, -130)];
+    > divided = dividePolygon(crossAntiMPoly);
+
+
