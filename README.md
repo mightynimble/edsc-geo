@@ -53,7 +53,7 @@ There is an example html file (index.html) in dist folder.
 ## Usage
 * Include divide-polygon.js in your html header
 
-    > <script src="divide-polygon.js" type="text/javascript"></script>
+    <script src="divide-polygon.js" type="text/javascript"></script>
 
 * A polygon, an array of lat-lng objects, which crosses antemeridian, can be divided into multiple polygons, as is shown in the red polygon on the example page.
 
