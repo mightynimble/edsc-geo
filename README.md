@@ -57,7 +57,7 @@ There is an example html file (index.html) in dist folder.
 
 * A polygon, an array of lat-lng objects, which crosses antemeridian, can be divided into multiple polygons, as is shown in the red polygon on the example page.
 
-    > var crossAntiMPoly = [new LatLng(22, -130), new LatLng(22, 100), new LatLng(10, 100), new LatLng(10, -130), new LatLng(22, -130)];
-    > divided = dividePolygon(crossAntiMPoly);
+    var crossAntiMPoly = [new LatLng(22, -130), new LatLng(22, 100), new LatLng(10, 100), new LatLng(10, -130), new LatLng(22, -130)];
+    divided = dividePolygon(crossAntiMPoly);
 
 
